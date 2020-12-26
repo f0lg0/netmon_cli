@@ -1,11 +1,18 @@
 #include "../includes.h"
+#include "http_parser.h"
 
+/**
+ * hostinfo: information about an host
+*/
 typedef struct {
     char* hostname;
     char ipstr_v4[INET_ADDRSTRLEN];
     char ipstr_v6[INET6_ADDRSTRLEN];
 } hostinfo;
 
+/**
+ * curr_netinfo: information about the current network 
+*/
 typedef struct {
     char* netname;
     char* dlspeed;
@@ -14,6 +21,11 @@ typedef struct {
 
 /* [BEGIN] host info gathering */
 
+/**
+ * alloc_hinfo: allocate memory for the hinfo struct
+ * @param void
+ * @return pointer to a new hinfo struct
+*/
 hostinfo* alloc_hinfo() {
     hostinfo* hinfo = malloc(sizeof(hostinfo));
     hinfo->hostname = NULL;
@@ -23,6 +35,11 @@ hostinfo* alloc_hinfo() {
     return hinfo; 
 }
 
+/**
+ * showip: get public ip (v4 and v6) from hostname
+ * @param host hostname as string
+ * @return pointer to hinfo struct about the newly analyzed host
+*/
 hostinfo* showip(char* host) {
     hostinfo* hinfo = alloc_hinfo();
 
@@ -70,6 +87,11 @@ hostinfo* showip(char* host) {
 
 /* [BEGIN] net info gathering */
 
+/**
+ * alloc_curr_netinfo: allocate memory for curr_netinfo struct
+ * @param void
+ * @return pointer to the newly created curr_netinfo struct
+*/
 curr_netinfo* alloc_curr_netinfo() {
     curr_netinfo* net = malloc(sizeof(curr_netinfo));
     net->netname = NULL;
@@ -130,12 +152,6 @@ curr_netinfo* netinfo(char* host, int devmode) {
 
     if (!res_v4 && !res_v6) return NULL;
 
-    // char* filename = "enwik9.zip";
-    // FILE *file = NULL;
-    // int file_len = 308000000;
-    // char* server_reply = malloc(file_len);
-    // int total_len = 0;
-
     printf("[x] creating socket...\n");
     if (devmode == 1) printf("[DEBUG] res->ai_family: %d, res->ai_socktype: %d, res->ai_protocol: %d\n", res->ai_family, res->ai_socktype, res->ai_protocol);
 
@@ -148,42 +164,46 @@ curr_netinfo* netinfo(char* host, int devmode) {
     status = connect(sockfd, res->ai_addr, res->ai_addrlen);
     printf("[STATUS] connection: %d\n", status);
 
-    char* req = "GET /dc/enwik9.zip HTTP/1.0\r\n\r\nHost: www.mattmahoney.net\r\n\r\n Connection: keep-alive\r\n\r\n Keep-Alive: 300\r\n";
+    char* req = "GET /dc/enwik9.zip HTTP/1.1\r\nHost: www.mattmahoney.net\r\n\n";
     ssize_t bsent = send(sockfd, req, strlen(req) , 0);
     printf("[LOG] sent: %d\n", bsent);
 
-    // remove(filename);
+    // int SIZE = 1024;
+    // int n;
+    // FILE *fp;
+    // char *filename = "recv.txt";
+    // char buffer[SIZE];
 
-    // file = fopen(filename, "ab+");
-
-    // if (!file){
-    //     printf("File could not opened");
-    //     return NULL;
-    // }   
-
-    // while(1) {
-    //     int received_len = recv(sockfd, server_reply , sizeof(server_reply) , 0);
-
-    //     if (received_len < 0 ){
-    //         puts("recv failed");
+    // fp = fopen(filename, "w");
+    // while (1) {
+    //     n = recv(sockfd, buffer, SIZE, 0);
+    //     if (n <= 0){
     //         break;
+    //         return NULL;
     //     }
-
-    //     total_len += received_len;
-  
-    //     fwrite(server_reply , received_len , 1, file);
-
-    //     printf("\nReceived byte size = %d\nTotal lenght = %d", received_len, total_len);
-
-    //     if( total_len >= file_len ){
-    //         break;
-    //     }   
+    //     fprintf(fp, "%s", buffer);
+    //     bzero(buffer, SIZE);
     // }
 
-    // puts("Reply received\n");
+    long bufflen = 1024;
+    char buffer[bufflen]; 
 
-    // fclose(file);
+    ssize_t brecv = recv(sockfd, buffer, bufflen, 0);
 
+    printf("[x] recv: %d\n", brecv);
+    printf("[x] buffer: %p\n", buffer);
+
+
+    char* result[2];
+    contentinfo(buffer, result);
+    printf("%s\n", result[0]);
+    printf("%s\n", result[1]);
+
+    printf("%d\n", parse_hcontentlength(result[0]));
+    printf("%s\n", parse_hcontenttype(result[1]));
+
+    free(result[0]);
+    free(result[1]);
 
     freeaddrinfo(res); // free linked list
 
