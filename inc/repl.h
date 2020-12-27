@@ -189,6 +189,27 @@ execute_result execute_whois(command* cmd) {
     return EXECUTE_SUCCESS;
 }
 
+/**
+ * execute_sniff. executes the command 'sniff' that triggers the packet sniffer
+ * @param void (in the future we will have to pass the command)
+ * @return EXECUTE status code
+*/
+execute_result execute_sniff() {
+    printf("[LOG] Opening raw socket...\n");
+
+    int rsock = open_rsock();
+
+    if (rsock == -1) return EXECUTE_FAILURE;
+
+    printf("[LOG] Raw socket opened.\n");
+
+    int status = recv_net_pckts(&rsock);
+
+    if (status != 0) return EXECUTE_FAILURE;
+
+    return EXECUTE_SUCCESS;
+}
+
 
 /**
  * execute_command: wrapper around the possible command operations (whois, sniff, etc)
@@ -198,8 +219,7 @@ execute_result execute_whois(command* cmd) {
 execute_result execute_command(command* cmd) {
     switch (cmd->type) {
         case (COMMAND_SNIFFER):
-            printf("[EXECUTING] Packet Sniffer...\n");
-            return EXECUTE_SUCCESS;
+            return execute_sniff();
         case (COMMAND_INFO):
             return execute_whois(cmd);
         default:
