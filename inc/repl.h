@@ -161,6 +161,12 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
 
     if (strncmp(ibuff->buffer, "sniff", 5) == 0) {
         cmd->type = COMMAND_SNIFFER;
+        
+        int args = sscanf(ibuff->buffer, "sniff %d", &(cmd->payload.pckt_num));
+        if (args < 1) {
+            return PREPARE_SYNTAX_ERROR;
+        }
+
         return PREPARE_SUCCESS;
     }
 
@@ -194,17 +200,14 @@ execute_result execute_whois(command* cmd) {
  * @param void (in the future we will have to pass the command)
  * @return EXECUTE status code
 */
-execute_result execute_sniff() {
-    printf("[LOG] Opening raw socket...\n");
-
+execute_result execute_sniff(command* cmd) {
     int rsock = open_rsock();
-
     if (rsock == -1) return EXECUTE_FAILURE;
 
-    printf("[LOG] Raw socket opened.\n");
-
-    int status = recv_net_pckts(&rsock);
-
+    // allocating buffer to receive data
+    unsigned char* buffer = alloc_pckts_buffer();
+    
+    int status = run_sniffer(&rsock, buffer, cmd->payload.pckt_num);
     if (status != 0) return EXECUTE_FAILURE;
 
     return EXECUTE_SUCCESS;
@@ -219,7 +222,7 @@ execute_result execute_sniff() {
 execute_result execute_command(command* cmd) {
     switch (cmd->type) {
         case (COMMAND_SNIFFER):
-            return execute_sniff();
+            return execute_sniff(cmd);
         case (COMMAND_INFO):
             return execute_whois(cmd);
         default:
