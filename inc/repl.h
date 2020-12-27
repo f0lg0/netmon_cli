@@ -99,7 +99,6 @@ typedef enum { COMMAND_INFO, COMMAND_SNIFFER } command_type;
 
 /**
  * command_payload: the payload of a command like sniff or whois
- * TODO: buffer overflow protection
 */
 typedef struct {
     char target[256];
@@ -153,7 +152,7 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
     if (strncmp(ibuff->buffer, "whois", 5) == 0) {
         cmd->type = COMMAND_INFO;
 
-        int args = sscanf(ibuff->buffer, "whois %s", cmd->payload.target);
+        int args = sscanf(ibuff->buffer, "whois %255s", cmd->payload.target);
         if (args < 1) {
             return PREPARE_SYNTAX_ERROR;
         }

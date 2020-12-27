@@ -1,3 +1,14 @@
+/*
++----------------------------------------+
+|        info gathering module           |
+|                                        |
+|      host info gathering functions     |
+|                                        |
+|  Author: f0lg0                         |
+|  Date: 27-12-2020 (dd-mm-yyyy)         |
++----------------------------------------+
+*/
+
 #include "includes.h"
 #include "utils/http_parser.h"
 
@@ -45,7 +56,6 @@ hostinfo* showip(char* host) {
 
     if ((status = getaddrinfo(host, NULL, &hints, &res)) != 0) {
 	    fprintf(stderr, "[ERROR] getaddrinfo: %s\n", gai_strerror(status));
-        freeaddrinfo(res);
         free(hinfo->hostname);
         free(hinfo);
 
