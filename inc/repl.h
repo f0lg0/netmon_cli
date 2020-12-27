@@ -45,6 +45,16 @@ input_buffer* new_input_buffer() {
 void print_prompt() { printf("[ netmon ]$ "); }
 
 /**
+ * print_help: prints the help screen
+ * @param void
+ * @return void
+*/
+void print_help() {
+    printf("\nCOMMAND\t\tUSAGE\n");
+    printf("\nwhois\t\twhois [TARGET] --> e.g. 'google.com'. DO NOT SPECIFY THE PROTOCOL (http, https, etc.)\n\n");
+}
+
+/**
  * read_input: wrapper around getline that reads the input and saves it to the given buffer
  * @param ibuff an input buffer
  * @return void
@@ -125,6 +135,9 @@ meta_command_result parse_meta_command(input_buffer* ibuff) {
     if (strcmp(ibuff->buffer, ".exit") == 0) {
         close_input_buffer(ibuff);
         exit(EXIT_SUCCESS);
+    } else if (strcmp(ibuff->buffer, ".help") == 0) {
+        print_help();
+        return META_COMMAND_SUCCESS;
     } else {
         return META_COMMAND_UNRECOGNIZED_COMMAND;
     }
