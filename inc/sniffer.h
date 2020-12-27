@@ -29,18 +29,26 @@ int openlog(FILE* log) {
 /**
  * open_sock: open a raw socket
  * ! NEED ROOT PERMISSIONS
- * @param rsock a pointer to an int to store the socket file descriptor
- * @return 0 if success, 1 if failure
+ * @param void
+ * @return raw socket if success, -1 if failure
 */
 int open_rsock() {
+    printf("[LOG] Opening raw socket...\n");
+
     int rsock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     setsockopt(rsock , SOL_SOCKET , SO_BINDTODEVICE , "wlp5s0" , strlen("wlp5s0") + 1);
 
     if (rsock < 0) return -1;
 
+    printf("[LOG] Raw socket opened.\n");
     return rsock;
 }
 
+/**
+ * alloc_pckts_buffer: allocate huge buffer for packets
+ * @param void
+ * @return pointer to the newly allocated buffer
+*/
 unsigned char* alloc_pckts_buffer() {
     unsigned char* buffer = malloc(BUFF_SIZE);
     bzero(buffer, BUFF_SIZE);
@@ -51,7 +59,7 @@ unsigned char* alloc_pckts_buffer() {
 /**
  * recv_net_pckts: receive network packets
  * @param rsock pointer to a raw socket file descriptor
- * @return 0 if success, 1 if failure
+ * @return 0 if success, -1 if failure
 */
 int recv_net_pckts(int* rsock) {
     // allocating buffer to receive data
@@ -64,7 +72,7 @@ int recv_net_pckts(int* rsock) {
 
     if (brecv < 0) {
         printf("[ERROR] (recv_net_pckts: %d) Failed to receive data.\n", brecv);
-        return 1;
+        return -1;
     }
 
     return 0;
