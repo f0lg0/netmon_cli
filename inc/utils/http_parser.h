@@ -1,7 +1,21 @@
+/*
++----------------------------------------+
+|          HTTP parser module            |
+|                                        |
+|   at the moment this module is not     |
+|            used anywhere               |
+|                                        |
+|    might come in handy in the future   |
+|                                        |
+|  Author: f0lg0                         |
+|  Date: 27-12-2020 (dd-mm-yyyy)         |
++----------------------------------------+
+*/
+
 #include "../includes.h"
 
 /**
- * contentinfo: get content info from http response
+ * contentinfo: get content info (headers) from http response
  * TODO: error handling
  * @param res pointer to http response in string format
  * @param result pointer to string array to store the parsed result

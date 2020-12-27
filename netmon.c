@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
                 break;
 
             case (EXECUTE_FAILURE):
-                printf("[FAILUR] failed to execute. \n");
+                printf("[FAILURE] failed to execute. \n");
                 break;
             }
     }

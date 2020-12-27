@@ -36,31 +36,33 @@ hostinfo* showip(char* host) {
     hinfo->hostname = malloc(strlen(host));
     strcpy(hinfo->hostname, host);
 
-    struct addrinfo hints, *res, *p;
+    struct addrinfo hints, *res, *idx;
     int status;
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
     if ((status = getaddrinfo(host, NULL, &hints, &res)) != 0) {
-	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+	    fprintf(stderr, "[ERROR] getaddrinfo: %s\n", gai_strerror(status));
+        freeaddrinfo(res);
+        free(hinfo->hostname);
+        free(hinfo);
+
 	    return NULL;
     }
 
-    for (p = res; p != NULL; p = p->ai_next) {
+    for (idx = res; idx != NULL; idx = idx->ai_next) {
         void *addr;
 
-        // get the pointer to the address itself,
-        // different fields in IPv4 and IPv6
-        if (p->ai_family == AF_INET) {
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+        if (idx->ai_family == AF_INET) {
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)idx->ai_addr;
             addr = &(ipv4->sin_addr);
-            inet_ntop(p->ai_family, addr, hinfo->ipstr_v4, sizeof(hinfo->ipstr_v4));
+            inet_ntop(idx->ai_family, addr, hinfo->ipstr_v4, sizeof(hinfo->ipstr_v4));
         } else {
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)idx->ai_addr;
             addr = &(ipv6->sin6_addr);
-            inet_ntop(p->ai_family, addr, hinfo->ipstr_v6, sizeof(hinfo->ipstr_v6));
+            inet_ntop(idx->ai_family, addr, hinfo->ipstr_v6, sizeof(hinfo->ipstr_v6));
         }
         
     }

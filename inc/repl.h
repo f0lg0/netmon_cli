@@ -1,10 +1,12 @@
 /*
 +----------------------------------------+
+|              REPL module               |
 |                                        |
+|   this is the command line interface   |
+|            of netmon                   |
 |                                        |
-|                                        |
-|                                        |
-|                                        |
+|  Author: f0lg0                         |
+|  Date: 27-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
@@ -142,7 +144,6 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
         if (args < 1) {
             return PREPARE_SYNTAX_ERROR;
         }
-        printf("%s\n", cmd->payload.target);
         return PREPARE_SUCCESS;
     }
 
@@ -154,16 +155,24 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
     return PREPARE_UNRECOGNIZED_COMMAND;
 }
 
-
+/**
+ * execute_whois: executes the command 'whois'
+ * @param cmd instance of the 'command' structure
+ * @return EXECUTE status code
+*/
 execute_result execute_whois(command* cmd) {
-    printf("target: %s\n", cmd->payload.target);
     hostinfo* hinfo = showip(cmd->payload.target);
-    printf("IP addresses for %s:\n\n", cmd->payload.target);
-    printf("\tIPv4: %s\n", hinfo->ipstr_v4);
-    printf("\tIPv6: %s\n", hinfo->ipstr_v6);
 
-    free(hinfo->hostname);
-    free(hinfo);
+    if (hinfo) {
+        printf("IP addresses for %s:\n\n", cmd->payload.target);
+        printf("\tIPv4: %s\n", hinfo->ipstr_v4);
+        printf("\tIPv6: %s\n", hinfo->ipstr_v6);
+
+        free(hinfo->hostname);
+        free(hinfo);
+    } else {
+        return EXECUTE_FAILURE;
+    }
 
     return EXECUTE_SUCCESS;
 }
