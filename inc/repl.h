@@ -42,7 +42,7 @@ input_buffer* new_input_buffer() {
  * @param void
  * @return void
 */
-void print_prompt() { printf("[ netmon ]$ "); }
+void print_prompt() { printf("[ \033[1;37mnetmon\033[0m ]$ "); }
 
 /**
  * print_help: prints the help screen
@@ -63,7 +63,7 @@ void read_input(input_buffer* ibuff) {
     ssize_t rbytes = getline(&(ibuff->buffer), &(ibuff->buffer_length), stdin);
 
     if (rbytes <= 0) {
-        printf("[ERROR] Error reading input.\n");
+        printf("[ \033[1;31mERROR\033[0m ] Error reading input.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -226,7 +226,7 @@ execute_result execute_command(command* cmd) {
         case (COMMAND_INFO):
             return execute_whois(cmd);
         default:
-            printf("[ERROR] Unrecognized command.\n");
+            printf("[ \033[1;31mERROR\033[0m ] Unrecognized command.\n");
             break;
     }
 }

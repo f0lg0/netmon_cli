@@ -20,14 +20,14 @@
  * @return raw socket if success, -1 if failure
 */
 int open_rsock() {
-    printf("[LOG] Opening raw socket...\n");
+    printf("[  \033[1;33mLOG\033[0m  ] Opening raw socket...\n");
 
     int rsock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     setsockopt(rsock , SOL_SOCKET , SO_BINDTODEVICE , "wlp5s0" , strlen("wlp5s0") + 1);
 
     if (rsock < 0) return -1;
 
-    printf("[LOG] Raw socket opened.\n");
+    printf("[  \033[1;33mLOG\033[0m  ] Raw socket opened.\n");
     return rsock;
 }
 

@@ -55,7 +55,7 @@ hostinfo* showip(char* host) {
     hints.ai_socktype = SOCK_STREAM;
 
     if ((status = getaddrinfo(host, NULL, &hints, &res)) != 0) {
-	    fprintf(stderr, "[ERROR] getaddrinfo: %s\n", gai_strerror(status));
+	    fprintf(stderr, "[ \033[1;31mERROR\033[0m ] getaddrinfo: %s\n", gai_strerror(status));
         free(hinfo->hostname);
         free(hinfo);
 

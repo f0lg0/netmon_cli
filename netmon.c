@@ -4,20 +4,6 @@
 #include "inc/repl.h"
 
 int main(int argc, char *argv[]) {
-    // hostinfo* hinfo = showip("google.com");
-    // printf("IP addresses for %s:\n\n", "google.com");
-    // printf("\tIPv4: %s\n", hinfo->ipstr_v4);
-    // printf("\tIPv6: %s\n", hinfo->ipstr_v6);
-
-    // free(hinfo->hostname);
-    // free(hinfo);
-
-    // FILE* logfile;
-    // if (openlog(logfile) != 0) {
-    //     printf("[ERROR] Unable to open log file.\n");
-    //     return 1;
-    // }
-
     input_buffer* ibuff = new_input_buffer();
 
     while (1) {
@@ -50,11 +36,11 @@ int main(int argc, char *argv[]) {
 
         switch (execute_command(&cmd)) {
             case (EXECUTE_SUCCESS):
-                printf("[SUCCESS] Executed. \n");
+                printf("[\033[1;32mSUCCESS\033[0m] Executed. \n");
                 break;
 
             case (EXECUTE_FAILURE):
-                printf("[FAILURE] failed to execute. \n");
+                printf("[\033[1;31mFAILURE\033[0m] failed to execute. \n");
                 break;
             }
     }
