@@ -6,7 +6,7 @@
 |            raw sockets                 |
 |                                        |
 |  Author: f0lg0                         |
-|  Date: 27-12-2020 (dd-mm-yyyy)         |
+|  Date: 28-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
@@ -72,53 +72,53 @@ void print_ethhdr(unsigned char* buffer) {
  * @return void
 */
 void print_iphdr(unsigned char* buffer) {
-    struct iphdr* ip = (struct iphdr *)(buffer + sizeof(struct ethhdr));
+    struct iphdr* iphdr = (struct iphdr *)(buffer + sizeof(struct ethhdr));
 
     struct sockaddr_in src, dst;
     bzero(&src, sizeof(src));
     bzero(&dst, sizeof(dst));
 
-    src.sin_addr.s_addr = ip->saddr;
-    dst.sin_addr.s_addr = ip->daddr;
+    src.sin_addr.s_addr = iphdr->saddr;
+    dst.sin_addr.s_addr = iphdr->daddr;
 
     printf("\n\tIP Header\n");
-    printf("\t\t|-Version : %d\n",(unsigned int)ip->version);
-    printf("\t\t|-Internet Header Length : %d DWORDS or %d Bytes\n",(unsigned int)ip->ihl,((unsigned int)(ip->ihl))*4);
-    printf("\t\t|-Type Of Service : %d\n",(unsigned int)ip->tos);
-    printf("\t\t|-Total Length : %d Bytes\n",ntohs(ip->tot_len));
-    printf("\t\t|-Identification : %d\n",ntohs(ip->id));
-    printf("\t\t|-Time To Live : %d\n",(unsigned int)ip->ttl);
-    printf("\t\t|-Protocol : %d\n",(unsigned int)ip->protocol);
-    printf("\t\t|-Header Checksum : %d\n",ntohs(ip->check));
+    printf("\t\t|-Version : %d\n",(unsigned int)iphdr->version);
+    printf("\t\t|-Internet Header Length : %d DWORDS or %d Bytes\n",(unsigned int)iphdr->ihl,((unsigned int)(iphdr->ihl))*4);
+    printf("\t\t|-Type Of Service : %d\n",(unsigned int)iphdr->tos);
+    printf("\t\t|-Total Length : %d Bytes\n",ntohs(iphdr->tot_len));
+    printf("\t\t|-Identification : %d\n",ntohs(iphdr->id));
+    printf("\t\t|-Time To Live : %d\n",(unsigned int)iphdr->ttl);
+    printf("\t\t|-Protocol : %d\n",(unsigned int)iphdr->protocol);
+    printf("\t\t|-Header Checksum : %d\n",ntohs(iphdr->check));
     printf("\t\t|-Source IP : %s\n", inet_ntoa(src.sin_addr));
     printf("\t\t|-Destination IP : %s\n",inet_ntoa(dst.sin_addr));
 }
 
 /**
- * print_udphdr: extracts and prints to the screen the UPD header
+ * print_udppckt: prints to the screen a UPD packet
  * @param buffer memory containing the packets
  * @param brecv the amount of data received
  * @return void
 */
-void print_udphdr(unsigned char* buffer, ssize_t brecv) {
-    struct iphdr* ip = (struct iphdr *)(buffer + sizeof(struct ethhdr));
+void print_udppckt(unsigned char* buffer, ssize_t brecv) {
+    struct iphdr* iphdr = (struct iphdr *)(buffer + sizeof(struct ethhdr));
 
     // getting size from IHL (Internet Header Length), which is the number of 32-bit words.
     // multiply by 4 to get the size in bytes
-    unsigned int iphdrlen = ip->ihl * 4;
+    unsigned int iphdrlen = iphdr->ihl * 4;
 
     // getting UDP header
-    struct udphdr* udp =(struct udphdr *)(buffer + iphdrlen + sizeof(struct ethhdr)); 
+    struct udphdr* udph =(struct udphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen); 
 
     printf("\n\tUDP Header\n");
-    printf("\t\t|-Source Port : %d\n" , ntohs(udp->source));
-    printf("\t\t|-Destination Port : %d\n" , ntohs(udp->dest));
-    printf("\t\t|-UDP Length : %d\n" , ntohs(udp->len));
-    printf("\t\t|-UDP Checksum : %d\n" , ntohs(udp->check));
+    printf("\t\t|-Source Port : %d\n" , ntohs(udph->source));
+    printf("\t\t|-Destination Port : %d\n" , ntohs(udph->dest));
+    printf("\t\t|-UDP Length : %d\n" , ntohs(udph->len));
+    printf("\t\t|-UDP Checksum : %d\n" , ntohs(udph->check));
 
     // Printing Data
-    unsigned char* data = (buffer + iphdrlen + sizeof(struct ethhdr) + sizeof(struct udphdr));
-    int remaining_data = brecv - (iphdrlen + sizeof(struct ethhdr) + sizeof(struct udphdr));
+    unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr));
+    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr));
 
     printf("\n\tData\n\t");
     for(int i = 0; i < remaining_data; i++) {
@@ -129,6 +129,88 @@ void print_udphdr(unsigned char* buffer, ssize_t brecv) {
     }
     printf("\n");
 
+}
+
+/**
+ * print_tcppckt: prints to the screen a TCP packet
+ * @param buffer memory containing the packets
+ * @param brecv the amount of data received
+*/
+void print_tcppckt(unsigned char* buffer, ssize_t brecv) {
+    struct iphdr* iphdr = (struct iphdr *)(buffer + sizeof(struct ethhdr));
+
+    // getting size from IHL (Internet Header Length), which is the number of 32-bit words.
+    // multiply by 4 to get the size in bytes
+    unsigned int iphdrlen = iphdr->ihl * 4;
+
+    struct tcphdr* tcph = (struct tcphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen);
+
+    printf("\n\tTCP Header\n");
+	printf("\t\t|-Source Port      : %u\n", ntohs(tcph->source));
+	printf("\t\t|-Destination Port : %u\n", ntohs(tcph->dest));
+	printf("\t\t|-Sequence Number    : %u\n", ntohl(tcph->seq));
+	printf("\t\t|-Acknowledge Number : %u\n", ntohl(tcph->ack_seq));
+	printf("\t\t|-Header Length      : %d DWORDS or %d BYTES\n" , (unsigned int)tcph->doff,(unsigned int)tcph->doff*4);
+	printf("\t\t|-Urgent Flag          : %d\n", (unsigned int)tcph->urg);
+	printf("\t\t|-Acknowledgement Flag : %d\n", (unsigned int)tcph->ack);
+	printf("\t\t|-Push Flag            : %d\n", (unsigned int)tcph->psh);
+	printf("\t\t|-Reset Flag           : %d\n", (unsigned int)tcph->rst);
+	printf("\t\t|-Synchronise Flag     : %d\n", (unsigned int)tcph->syn);
+	printf("\t\t|-Finish Flag          : %d\n", (unsigned int)tcph->fin);
+	printf("\t\t|-Window         : %d\n",ntohs(tcph->window));
+	printf("\t\t|-Checksum       : %d\n",ntohs(tcph->check));
+	printf("\t\t|-Urgent Pointer : %d\n",tcph->urg_ptr);
+
+    // Printing Data
+    unsigned char* data = (buffer+ sizeof(struct ethhdr) + iphdrlen + sizeof(struct tcphdr));
+    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct tcphdr));
+
+    printf("\n\tData\n\t");
+    for(int i = 0; i < remaining_data; i++) {
+        if(i != 0 && i % 16 == 0) {
+            printf("\n\t");
+        }
+        printf(" %.2X ", data[i]);
+    }
+    printf("\n");
+}
+
+/**
+ * print_icmppckt: prints to the screen a ICMP packet
+ * @param buffer memory containing the packets
+ * @param brecv the amount of data received
+ * @return void
+*/
+void print_icmppckt(unsigned char* buffer, ssize_t brecv) {
+    struct iphdr* iphdr = (struct iphdr *)(buffer + sizeof(struct ethhdr));
+    unsigned int iphdrlen = iphdr->ihl * 4;
+
+    struct icmphdr* icmph = (struct icmphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen); 
+
+    printf("\n\tICMP Header\n");
+	printf("\t\t|-Type : %d", (unsigned int)(icmph->type));
+			
+	if ((unsigned int)(icmph->type) == 11) {
+		printf("\t(TTL Expired)\n");
+	} else if ((unsigned int)(icmph->type) == ICMP_ECHOREPLY) {
+		printf("\t(ICMP Echo Reply)\n");
+	}
+
+    printf("\t\t|-Code : %d\n", (unsigned int)(icmph->code));
+	printf("\t\t|-Checksum : %d\n", ntohs(icmph->checksum));
+
+    // Printing Data
+    unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
+    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
+
+    printf("\n\tData\n\t");
+    for(int i = 0; i < remaining_data; i++) {
+        if(i != 0 && i % 16 == 0) {
+            printf("\n\t");
+        }
+        printf(" %.2X ", data[i]);
+    }
+    printf("\n");
 }
 
 /**
@@ -167,7 +249,9 @@ int run_sniffer(int* rsock, unsigned char* buffer, int pckts_num) {
             printf("\n[>] Sniffed Packet #%d\n", i);
             print_ethhdr(buffer);
             print_iphdr(buffer);
-            print_udphdr(buffer, brecv);
+            // print_udppckt(buffer, brecv);
+            // print_tcppckt(buffer, brecv);
+            print_icmppckt(buffer, brecv);
         }
     } else if (pckts_num == 0) {
         int i = 0;
@@ -176,7 +260,8 @@ int run_sniffer(int* rsock, unsigned char* buffer, int pckts_num) {
             printf("\n[>] Sniffed Packet #%d\n", i);
             print_ethhdr(buffer);
             print_iphdr(buffer);
-            print_udphdr(buffer, brecv);
+            print_udppckt(buffer, brecv);
+            print_tcppckt(buffer, brecv);
             i++;
         }
     } else {
