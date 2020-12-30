@@ -6,7 +6,7 @@
 |            of netmon                   |
 |                                        |
 |  Author: f0lg0                         |
-|  Date: 29-12-2020 (dd-mm-yyyy)         |
+|  Date: 30-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
@@ -104,7 +104,7 @@ typedef struct {
     char target[256];
     char interface[12];
     int pckt_num;
-    char logfile[256];
+    int logfile;
 } command_payload;
 
 /**
@@ -162,8 +162,8 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
     if (strncmp(ibuff->buffer, "sniff", 5) == 0) {
         cmd->type = COMMAND_SNIFFER;
         
-        int args = sscanf(ibuff->buffer, "sniff %d", &(cmd->payload.pckt_num));
-        if (args < 1) {
+        int args = sscanf(ibuff->buffer, "sniff -p %d -f %d", &(cmd->payload.pckt_num), &(cmd->payload.logfile));
+        if (args < 2) {
             return PREPARE_SYNTAX_ERROR;
         }
 
@@ -207,7 +207,7 @@ execute_result execute_sniff(command* cmd) {
     // allocating buffer to receive data
     unsigned char* buffer = alloc_pckts_buffer();
     
-    int status = run_sniffer(&rsock, buffer, cmd->payload.pckt_num);
+    int status = run_sniffer(&rsock, buffer, cmd->payload.pckt_num, cmd->payload.logfile);
     if (status != 0) return EXECUTE_FAILURE;
 
     return EXECUTE_SUCCESS;

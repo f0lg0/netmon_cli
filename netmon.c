@@ -3,6 +3,8 @@
 #include "inc/sniffer.h"
 #include "inc/repl.h"
 
+FILE* log_f = NULL;
+
 int main(int argc, char *argv[]) {
     input_buffer* ibuff = new_input_buffer();
 
