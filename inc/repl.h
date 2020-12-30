@@ -6,7 +6,7 @@
 |            of netmon                   |
 |                                        |
 |  Author: f0lg0                         |
-|  Date: 27-12-2020 (dd-mm-yyyy)         |
+|  Date: 29-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
@@ -51,7 +51,7 @@ void print_prompt() { printf("[ \033[1;37mnetmon\033[0m ]$ "); }
 */
 void print_help() {
     printf("\nCOMMAND\t\tUSAGE\n");
-    printf("\nwhois\t\twhois [TARGET] --> e.g. 'google.com'. DO NOT SPECIFY THE PROTOCOL (http, https, etc.)\n\n");
+    printf("\nshowip\t\tshowip [TARGET] --> e.g. 'google.com'. DO NOT SPECIFY THE PROTOCOL (http, https, etc.)\n\n");
 }
 
 /**
@@ -98,7 +98,7 @@ typedef enum {
 typedef enum { COMMAND_INFO, COMMAND_SNIFFER } command_type;
 
 /**
- * command_payload: the payload of a command like sniff or whois
+ * command_payload: the payload of a command like sniff or showip
 */
 typedef struct {
     char target[256];
@@ -149,10 +149,10 @@ meta_command_result parse_meta_command(input_buffer* ibuff) {
  * @return PREPARE status code
 */
 prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
-    if (strncmp(ibuff->buffer, "whois", 5) == 0) {
+    if (strncmp(ibuff->buffer, "showip", 5) == 0) {
         cmd->type = COMMAND_INFO;
 
-        int args = sscanf(ibuff->buffer, "whois %255s", cmd->payload.target);
+        int args = sscanf(ibuff->buffer, "showip %255s", cmd->payload.target);
         if (args < 1) {
             return PREPARE_SYNTAX_ERROR;
         }
@@ -174,11 +174,11 @@ prepare_result prepare_command(input_buffer* ibuff, command* cmd) {
 }
 
 /**
- * execute_whois: executes the command 'whois'
+ * execute_showip: executes the command 'showip'
  * @param cmd instance of the 'command' structure
  * @return EXECUTE status code
 */
-execute_result execute_whois(command* cmd) {
+execute_result execute_showip(command* cmd) {
     hostinfo* hinfo = showip(cmd->payload.target);
 
     if (hinfo) {
@@ -215,7 +215,7 @@ execute_result execute_sniff(command* cmd) {
 
 
 /**
- * execute_command: wrapper around the possible command operations (whois, sniff, etc)
+ * execute_command: wrapper around the possible command operations (showip, sniff, etc)
  * @param command a pointer to a command structure
  * @return EXECUTE status code
 */
@@ -224,7 +224,7 @@ execute_result execute_command(command* cmd) {
         case (COMMAND_SNIFFER):
             return execute_sniff(cmd);
         case (COMMAND_INFO):
-            return execute_whois(cmd);
+            return execute_showip(cmd);
         default:
             printf("[ \033[1;31mERROR\033[0m ] Unrecognized command.\n");
             break;

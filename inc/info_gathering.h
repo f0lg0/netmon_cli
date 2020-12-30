@@ -5,7 +5,7 @@
 |      host info gathering functions     |
 |                                        |
 |  Author: f0lg0                         |
-|  Date: 27-12-2020 (dd-mm-yyyy)         |
+|  Date: 29-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
