@@ -14,7 +14,7 @@
 #define BUFF_SIZE 65536
 
 // global pointer defined in 'netmon.c'
-// I was lazy so I have used a global variable instead of passing the pointer to every function
+// I was lazy so I used a global variable instead of passing the pointer to every function
 extern FILE* log_f;
 
 /**
@@ -47,6 +47,13 @@ unsigned char* alloc_pckts_buffer() {
     return buffer;
 }
 
+/**
+ * print_pckt_payload: prints the data field of a packet to the screen
+ * @param buffer memory containing the packets
+ * @param brecv amount of data received
+ * @param iphdrlen the length (or size) of the IP header
+ * @return void
+*/
 void print_pckt_payload(unsigned char* buffer, ssize_t brecv, unsigned short iphdrlen) {
     // getting packet payload
     unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr));
@@ -241,7 +248,6 @@ void dump_ethhdr_to_log(unsigned char* buffer) {
     fprintf(log_f, "\t\t├─ Destination Address : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X\n",eth->h_dest[0],eth->h_dest[1],eth->h_dest[2],eth->h_dest[3],eth->h_dest[4],eth->h_dest[5]);
     fprintf(log_f, "\t\t├─ Protocol : 0x%.2x\n",eth->h_proto);
     
-    fflush(log_f);
 }
 
 /**
@@ -273,6 +279,28 @@ void dump_iphdr_to_log(unsigned char* buffer) {
 }
 
 /**
+ * dump_pckt_payload_to_log: dump sniffed packet payload to log file
+ * @param buffer memoery containing the packets
+ * @param brecv amount of data received
+ * @param iphdrlen length (or size) of the IP header
+ * @return void
+*/
+void dump_pckt_payload_to_log(unsigned char* buffer, ssize_t brecv, unsigned int iphdrlen) {
+    // getting packet payload
+    unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr));
+    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr));
+    
+    fprintf(log_f, "\n\tData\n\t");
+    for(int i = 0; i < remaining_data; i++) {
+        if(i != 0 && i % 16 == 0) {
+            fprintf(log_f, "\n\t");
+        }
+        fprintf(log_f, " %.2X ", data[i]);
+    }
+    fprintf(log_f, "\n");
+}
+
+/**
  * dump_icmppckt_to_log: dump sniffed ICMP packet to log file
  * @param buffer memory containing the packets
  * @param brecv amount of data received
@@ -280,7 +308,72 @@ void dump_iphdr_to_log(unsigned char* buffer) {
  * @return void
 */
 void dump_icmppckt_to_log(unsigned char* buffer, ssize_t brecv, unsigned int iphdrlen) {
+    struct icmphdr* icmph = (struct icmphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen); 
 
+    fprintf(log_f, "\n\tICMP Header\n");
+	fprintf(log_f, "\t\t├─ Type : %d", (unsigned int)(icmph->type));
+			
+	if ((unsigned int)(icmph->type) == 11) {
+		fprintf(log_f, "\t(TTL Expired)\n");
+	} else if ((unsigned int)(icmph->type) == ICMP_ECHOREPLY) {
+		fprintf(log_f, "\t(ICMP Echo Reply)\n");
+	}
+
+    fprintf(log_f, "\t\t├─ Code : %d\n", (unsigned int)(icmph->code));
+	fprintf(log_f, "\t\t├─ Checksum : %d\n", ntohs(icmph->checksum));
+
+    unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
+    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
+
+    dump_pckt_payload_to_log(buffer, brecv, iphdrlen);
+}
+
+/**
+ * dump_tcppckt_to_log: dump sniffed TCP packet to log file
+ * @param buffer memory containing the packets
+ * @param brecv amount of data received
+ * @param iphdrlen the length (or size) of the IP header
+ * @return void
+*/
+void dump_tcppckt_to_log(unsigned char* buffer, ssize_t brecv, unsigned int iphdrlen) {
+    struct tcphdr* tcph = (struct tcphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen);
+    
+    fprintf(log_f, "\n\tTCP Header\n");
+	fprintf(log_f, "\t\t├─ Source Port      : %u\n", ntohs(tcph->source));
+	fprintf(log_f, "\t\t├─ Destination Port : %u\n", ntohs(tcph->dest));
+	fprintf(log_f, "\t\t├─ Sequence Number    : %u\n", ntohl(tcph->seq));
+	fprintf(log_f, "\t\t├─ Acknowledge Number : %u\n", ntohl(tcph->ack_seq));
+	fprintf(log_f, "\t\t├─ Header Length      : %d DWORDS or %d BYTES\n" , (unsigned int)tcph->doff,(unsigned int)tcph->doff*4);
+	fprintf(log_f, "\t\t├─ Urgent Flag          : %d\n", (unsigned int)tcph->urg);
+	fprintf(log_f, "\t\t├─ Acknowledgement Flag : %d\n", (unsigned int)tcph->ack);
+	fprintf(log_f, "\t\t├─ Push Flag            : %d\n", (unsigned int)tcph->psh);
+	fprintf(log_f, "\t\t├─ Reset Flag           : %d\n", (unsigned int)tcph->rst);
+	fprintf(log_f, "\t\t├─ Synchronise Flag     : %d\n", (unsigned int)tcph->syn);
+	fprintf(log_f, "\t\t├─ Finish Flag          : %d\n", (unsigned int)tcph->fin);
+	fprintf(log_f, "\t\t├─ Window         : %d\n",ntohs(tcph->window));
+	fprintf(log_f, "\t\t├─ Checksum       : %d\n",ntohs(tcph->check));
+	fprintf(log_f, "\t\t├─ Urgent Pointer : %d\n",tcph->urg_ptr);
+
+    dump_pckt_payload_to_log(buffer, brecv, iphdrlen);
+}
+/**
+ * dump_udppckt_to_log: dump sniffed UDP packet to log file
+ * @param buffer memory containing the packets
+ * @param brecv amount of data received
+ * @param iphdrlen the length (or size) of the IP header
+ * @return void
+*/
+void dump_udppckt_to_log(unsigned char* buffer, ssize_t brecv, unsigned int iphdrlen) {
+    // getting UDP header
+    struct udphdr* udph =(struct udphdr *)(buffer + sizeof(struct ethhdr) + iphdrlen); 
+
+    fprintf(log_f, "\n\tUDP Header\n");
+    fprintf(log_f, "\t\t├─ Source Port : %d\n" , ntohs(udph->source));
+    fprintf(log_f, "\t\t├─ Destination Port : %d\n" , ntohs(udph->dest));
+    fprintf(log_f, "\t\t├─ UDP Length : %d\n" , ntohs(udph->len));
+    fprintf(log_f, "\t\t├─ UDP Checksum : %d\n" , ntohs(udph->check));
+
+    dump_pckt_payload_to_log(buffer, brecv, iphdrlen);
 }
 
 /**
@@ -328,26 +421,28 @@ void process_pcket(unsigned char* buffer, ssize_t brecv, int totpckts, int logfi
         dump_ethhdr_to_log(buffer);
         dump_iphdr_to_log(buffer);
 
-        // /* vim /etc/protocols */
-        // switch (iphdr->protocol) {
-        //     // ICMP
-        //     case 1: 
-        //         print_icmppckt(buffer, brecv, iphdrlen);
-        //         break;
+        /* vim /etc/protocols */
+        switch (iphdr->protocol) {
+            // ICMP
+            case 1: 
+                dump_icmppckt_to_log(buffer, brecv, iphdrlen);
+                break;
 
-        //     // TCP
-        //     case 6: 
-        //         print_tcppckt(buffer, brecv, iphdrlen);
-        //         break;
+            // TCP
+            case 6: 
+                dump_tcppckt_to_log(buffer, brecv, iphdrlen);
+                break;
 
-        //     // UDP
-        //     case 17:
-        //         print_udppckt(buffer, brecv, iphdrlen);
-        //         break;
+            // UDP
+            case 17:
+                dump_udppckt_to_log(buffer, brecv, iphdrlen);
+                break;
             
-        //     default:
-        //         break;
-        // }
+            default:
+                break;
+        }
+
+        fflush(log_f);
     }
 
 }
