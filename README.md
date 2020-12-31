@@ -27,4 +27,8 @@ for now it's only a packet sniffer.
 - gcc compiler
 - root permissions
 
+## Features
 
+- `showip [DOMAIN NAME]` --> shows the corresponding IPv4 and IPv6 address of a given domain name
+- `sniff -p [NUMBER OF PACKETS] -f [TO FILE OR TO STDOUT]` --> sniff a given number of packets to a
+file or to the screen (0 for `stdout`, 1 for log `file`)
