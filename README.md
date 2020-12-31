@@ -26,9 +26,31 @@ for now it's only a packet sniffer.
 - Linux machine
 - gcc compiler
 - root permissions
+- make
 
 ## Features
 
 - `showip [DOMAIN NAME]` --> shows the corresponding IPv4 and IPv6 address of a given domain name
 - `sniff -p [NUMBER OF PACKETS] -f [TO FILE OR TO STDOUT]` --> sniff a given number of packets to a
 file or to the screen (0 for `stdout`, 1 for log `file`)
+
+## Run 
+
+`make netmon`
+
+`sudo ./netmon` --> **MUST BE ROOT TO USE RAW SOCKETS**
+
+or you can do it manually:
+
+`gcc netmon.c -o netmon`
+
+`sudo ./netmon`
+
+To clean everything **INCLUDING THE LOG FILE**:
+
+`make clean`
+
+## Contributing
+
+Feel free to add features, make PRs and fix typos in my code! I am still a beginner in C so this
+piece of software won't be perfect, any help is appreciated!
