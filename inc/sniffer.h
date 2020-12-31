@@ -60,7 +60,7 @@ ssize_t recv_net_pckts(int* rsock, unsigned char* buffer, struct sockaddr* saddr
     ssize_t brecv = recvfrom(*rsock, buffer, BUFF_SIZE, 0, saddr, (socklen_t *)&saddrlen);
 
     if (brecv < 0) {
-        printf("[ERROR] (recv_net_pckts: %d) Failed to receive data.\n", brecv);
+        printf("[ERROR] (recv_net_pckts: %l) Failed to receive data.\n", brecv);
         return -1;
     }
     return brecv;
