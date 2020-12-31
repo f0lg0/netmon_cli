@@ -28,6 +28,10 @@ for now it's only a packet sniffer.
 - root permissions
 - make
 
+### Note
+
+I have used special characters to display colors, they may not work in some shells (I use bash)
+
 ## Features
 
 - `showip [DOMAIN NAME]` --> shows the corresponding IPv4 and IPv6 address of a given domain name
