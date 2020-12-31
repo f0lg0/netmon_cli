@@ -6,7 +6,7 @@
 |            of netmon                   |
 |                                        |
 |  Author: f0lg0                         |
-|  Date: 30-12-2020 (dd-mm-yyyy)         |
+|  Date: 31-12-2020 (dd-mm-yyyy)         |
 +----------------------------------------+
 */
 
@@ -52,6 +52,8 @@ void print_prompt() { printf("[ \033[1;37mnetmon\033[0m ]$ "); }
 void print_help() {
     printf("\nCOMMAND\t\tUSAGE\n");
     printf("\nshowip\t\tshowip [TARGET] --> e.g. 'google.com'. DO NOT SPECIFY THE PROTOCOL (http, https, etc.)\n\n");
+    printf("\nsniff\t\tsniff -p [PACKETS NUM] -f [FILE OR STDOUT] --> e.g. sniff -p 10 -f 0 (outputs packet to the screen, if -f is set to 1 it dumps packet to a log file). If -p is set to 0 it will forever run in a loop\n\n");
+    printf("\n.exit\t\texit netmon\n\n");
 }
 
 /**
@@ -102,7 +104,6 @@ typedef enum { COMMAND_INFO, COMMAND_SNIFFER } command_type;
 */
 typedef struct {
     char target[256];
-    char interface[12];
     int pckt_num;
     int logfile;
 } command_payload;
@@ -209,6 +210,8 @@ execute_result execute_sniff(command* cmd) {
     
     int status = run_sniffer(&rsock, buffer, cmd->payload.pckt_num, cmd->payload.logfile);
     if (status != 0) return EXECUTE_FAILURE;
+
+    close(rsock);
 
     return EXECUTE_SUCCESS;
 }

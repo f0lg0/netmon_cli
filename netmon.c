@@ -1,3 +1,15 @@
+/*
++----------------------------------------+
+|              netmon_cli                |
+|                                        |
+|    packet sniffer written using        |
+|            raw sockets                 |
+|                                        |
+|  Author: f0lg0                         |
+|  Date: 31-12-2020 (dd-mm-yyyy)         |
++----------------------------------------+
+*/
+
 #include "inc/includes.h"
 #include "inc/info_gathering.h"
 #include "inc/sniffer.h"
@@ -7,6 +19,8 @@ FILE* log_f = NULL;
 
 int main(int argc, char *argv[]) {
     input_buffer* ibuff = new_input_buffer();
+
+    printf("Type '.help' to display commands usage.\n");
 
     while (1) {
         print_prompt();

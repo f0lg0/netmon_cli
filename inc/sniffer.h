@@ -29,8 +29,6 @@ int open_rsock() {
     printf("[  \033[1;33mLOG\033[0m  ] Opening raw socket...\n");
 
     int rsock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    setsockopt(rsock , SOL_SOCKET , SO_BINDTODEVICE , "wlp5s0" , strlen("wlp5s0") + 1);
-
     if (rsock < 0) return -1;
 
     printf("[  \033[1;33mLOG\033[0m  ] Raw socket opened.\n");
@@ -135,6 +133,9 @@ void process_pcket(unsigned char* buffer, ssize_t brecv, int totpckts, int logfi
         }
 
         fflush(log_f);
+
+        // I don't know why but \r wasn't working as expected here...
+        printf("Sniffed packets : %d\n", totpckts);
     }
 
 }

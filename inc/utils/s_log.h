@@ -162,9 +162,5 @@ void print_icmppckt(unsigned char* buffer, ssize_t brecv, unsigned int iphdrlen)
     printf("\t\t├─ Code : %d\n", (unsigned int)(icmph->code));
 	printf("\t\t├─ Checksum : %d\n", ntohs(icmph->checksum));
 
-    // Printing Data
-    unsigned char* data = (buffer + sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
-    int remaining_data = brecv - (sizeof(struct ethhdr) + iphdrlen + sizeof(struct icmphdr));
-
     print_pckt_payload(buffer, brecv, iphdrlen);
 }
