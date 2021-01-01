@@ -1,5 +1,5 @@
 netmon:
-	$(CC) netmon.c repl.c info_gathering.c sniffer.c -o netmon.out
+	$(CC) src/netmon.c src/repl.c src/info_gathering.c src/sniffer.c -o netmon.out
 
 clean:
 	rm netmon.out

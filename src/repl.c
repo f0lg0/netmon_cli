@@ -10,10 +10,10 @@
 +----------------------------------------+
 */
 
-#include "inc/includes.h"
-#include "inc/repl.h"
-#include "inc/info_gathering.h"
-#include "inc/sniffer.h"
+#include "../inc/includes.h"
+#include "../inc/repl.h"
+#include "../inc/info_gathering.h"
+#include "../inc/sniffer.h"
 
 /* [BEGIN] Input Buffer Logic [BEGIN] */
 

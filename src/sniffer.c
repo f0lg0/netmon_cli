@@ -10,10 +10,10 @@
 +----------------------------------------+
 */
 
-#include "inc/includes.h"
-#include "inc/utils/f_log.h"
-#include "inc/utils/s_log.h"
-#include "inc/sniffer.h"
+#include "../inc/includes.h"
+#include "../inc/utils/f_log.h"
+#include "../inc/utils/s_log.h"
+#include "../inc/sniffer.h"
 #define BUFF_SIZE 65536 // 0x10000
 
 // global pointer defined in 'netmon.c'

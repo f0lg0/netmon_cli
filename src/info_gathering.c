@@ -9,8 +9,8 @@
 +----------------------------------------+
 */
 
-#include "inc/includes.h"
-#include "inc/info_gathering.h"
+#include "../inc/includes.h"
+#include "../inc/info_gathering.h"
 
 
 /* [BEGIN] host info gathering */

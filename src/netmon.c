@@ -10,10 +10,10 @@
 +----------------------------------------+
 */
 
-#include "inc/includes.h"
-#include "inc/info_gathering.h"
-#include "inc/sniffer.h"
-#include "inc/repl.h"
+#include "../inc/includes.h"
+#include "../inc/info_gathering.h"
+#include "../inc/sniffer.h"
+#include "../inc/repl.h"
 
 int main(int argc, char *argv[]) {
     input_buffer* ibuff = new_input_buffer();
