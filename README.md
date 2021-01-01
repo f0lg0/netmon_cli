@@ -30,7 +30,7 @@ for now it's only a packet sniffer.
 
 ### Note
 
-I have used special characters to display colors, they may not work in some shells (I use bash)
+I have used special characters to display colors, they may not work in some terminal emulators.
 
 ## Features
 
