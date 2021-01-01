@@ -44,12 +44,6 @@ file or to the screen (0 for `stdout`, 1 for log `file`)
 
 `sudo ./netmon` --> **MUST BE ROOT TO USE RAW SOCKETS**
 
-or you can do it manually:
-
-`gcc netmon.c -o netmon`
-
-`sudo ./netmon`
-
 To clean everything **INCLUDING THE LOG FILE**:
 
 `make clean`
