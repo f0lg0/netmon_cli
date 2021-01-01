@@ -1,6 +1,6 @@
-netmon: netmon.c
-	gcc netmon.c -o netmon
+netmon:
+	$(CC) netmon.c repl.c info_gathering.c sniffer.c -o netmon.out
 
 clean:
-	rm netmon
-	rm log.txt
+	rm netmon.out
+	if [ -a log.txt ]; then rm log.txt; fi;
