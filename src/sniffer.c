@@ -43,6 +43,10 @@ int open_rsock() {
 */
 unsigned char* alloc_pckts_buffer() {
     unsigned char* buffer = malloc(BUFF_SIZE);
+    if (buffer == NULL) {
+        printf("[ FATAL ] Insufficient memory.");
+        exit(1);
+    }
     bzero(buffer, BUFF_SIZE);
 
     return buffer;

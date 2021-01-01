@@ -22,6 +22,11 @@
 */
 hostinfo* alloc_hinfo() {
     hostinfo* hinfo = malloc(sizeof(hostinfo));
+    if (hinfo == NULL) {
+        printf("[ FATAL ] Insufficient memory.");
+        exit(1);
+    }
+    
     hinfo->hostname = NULL;
     hinfo->ipstr_v4[0] = -1;
     hinfo->ipstr_v6[0] = -1;

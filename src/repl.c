@@ -23,7 +23,12 @@
  * @return a pointer to the newly created buffer
 */
 input_buffer* new_input_buffer() {
-    input_buffer* ibuff = (input_buffer *)malloc(sizeof(input_buffer));
+    input_buffer* ibuff = malloc(sizeof(input_buffer));
+    if (ibuff == NULL) {
+        printf("[ FATAL ] Insufficient memory.");
+        exit(1);
+    }
+
     ibuff->buffer = NULL;
     ibuff->buffer_length = 0;
     ibuff->input_length = 0;
