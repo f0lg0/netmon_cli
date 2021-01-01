@@ -1,6 +1,6 @@
 /*
 +----------------------------------------+
-|          file logger module            |
+|          file logger header            |
 |                                        |
 |     log incoming packets to a          |
 |              txt file                  |

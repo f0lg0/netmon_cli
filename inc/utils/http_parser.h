@@ -1,8 +1,8 @@
 /*
 +----------------------------------------+
-|          HTTP parser module            |
+|          HTTP parser header            |
 |                                        |
-|   at the moment this module is not     |
+|   at the moment this header is not     |
 |            used anywhere               |
 |                                        |
 |    might come in handy in the future   |

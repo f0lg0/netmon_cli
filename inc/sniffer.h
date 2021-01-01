@@ -1,3 +1,14 @@
+/*
++----------------------------------------+
+|           sniffer header               |
+|                                        |
+|            see sniffer.c               |
+|                                        |
+|  Author: f0lg0                         |
+|  Date: 01-01-2021 (dd-mm-yyyy)         |
++----------------------------------------+
+*/
+
 #ifndef SNIFFER_H
 #define SNIFFER_H
 #include <stddef.h>

@@ -1,6 +1,6 @@
 /*
 +----------------------------------------+
-|         stdout logger module           |
+|         stdout logger header           |
 |                                        |
 |     log incoming packets to            |
 |               stdout                   |

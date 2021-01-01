@@ -36,7 +36,7 @@ hostinfo* alloc_hinfo() {
 */
 hostinfo* showip(char* host) {
     hostinfo* hinfo = alloc_hinfo();
-    hinfo->hostname = malloc(strlen(host));
+    hinfo->hostname = malloc(strlen(host) + 1);
     strcpy(hinfo->hostname, host);
 
     struct addrinfo hints, *res, *idx;
