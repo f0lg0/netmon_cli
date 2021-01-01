@@ -48,6 +48,10 @@ To clean everything **INCLUDING THE LOG FILE**:
 
 `make clean`
 
+### Note
+
+The `if` statement to remove `log.txt` in `Makefile` strangely works on Manjaro but not in Xubuntu.  
+
 ## Contributing
 
 Feel free to add features, make PRs and fix typos in my code! I am still a beginner in C so this
